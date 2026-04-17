@@ -49,7 +49,7 @@ FuoriMondo/
 
 ### Backend
 
-- **Spring Boot 3.x, Java 21, Maven**
+- **Spring Boot 3.x, Java 17, Maven**
 - **Base de données** :
   - Dev : H2 en mode file-based (fichier local, persistance entre runs)
   - Prod : PostgreSQL

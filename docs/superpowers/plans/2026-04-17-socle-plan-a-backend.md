@@ -4,10 +4,10 @@
 
 **Goal:** Livrer un backend Spring Boot complet et testable pour le Socle FuoriMondo : authentification (activation par code, waiting list, login, reset password), profils avec trois tiers, adresses, pages légales, back-office admin minimal. Tous les endpoints REST sont consommables et couverts par des tests d'intégration.
 
-**Architecture:** Monorepo, module `backend/` en Spring Boot 3.x + Java 21 + Maven. Un seul module, packages par domaine (`auth`, `users`, `addresses`, `admin`, `legal`, `email`). H2 file-based en dev, Postgres en prod, H2 in-memory en test. Sécurité par session Spring Session (JDBC) + CSRF, cookie `HttpOnly` `SameSite=Strict`. Flyway pour les migrations. Interface `EmailSender` avec implémentation console en dev.
+**Architecture:** Monorepo, module `backend/` en Spring Boot 3.x + Java 17 + Maven. Un seul module, packages par domaine (`auth`, `users`, `addresses`, `admin`, `legal`, `email`). H2 file-based en dev, Postgres en prod, H2 in-memory en test. Sécurité par session Spring Session (JDBC) + CSRF, cookie `HttpOnly` `SameSite=Strict`. Flyway pour les migrations. Interface `EmailSender` avec implémentation console en dev.
 
 **Tech Stack:**
-- Spring Boot 3.3.x, Java 21, Maven
+- Spring Boot 3.3.x, Java 17, Maven
 - Spring Security 6, Spring Session JDBC
 - Spring Data JPA, Hibernate
 - Flyway, H2 (dev + test), PostgreSQL (prod)
@@ -131,7 +131,7 @@ Fichier `backend/pom.xml` :
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <bucket4j.version>8.10.1</bucket4j.version>
         <springdoc.version>2.6.0</springdoc.version>
     </properties>
@@ -3814,11 +3814,11 @@ Fichier `backend/README.md` :
 ```markdown
 # FuoriMondo — Backend
 
-Spring Boot 3.3 / Java 21 / Maven.
+Spring Boot 3.3 / Java 17 / Maven.
 
 ## Prérequis
 
-- JDK 21
+- JDK 17
 - Maven 3.9+
 
 ## Développement
