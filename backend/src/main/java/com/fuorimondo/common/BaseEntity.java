@@ -1,12 +1,13 @@
 package com.fuorimondo.common;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 @MappedSuperclass
-public abstract class BaseEntity {
+public abstract class BaseEntity implements Serializable {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
