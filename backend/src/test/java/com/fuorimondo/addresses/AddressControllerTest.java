@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class AddressControllerTest {
 
     @Autowired MockMvc mvc;
@@ -34,8 +36,6 @@ class AddressControllerTest {
 
     @BeforeEach
     void setUp() {
-        addressRepository.deleteAll();
-        userRepository.deleteAll();
         u = new User();
         u.setEmail("addr@fm.com");
         u.setFirstName("A"); u.setLastName("B");
