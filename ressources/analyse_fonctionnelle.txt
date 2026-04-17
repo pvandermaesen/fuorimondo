@@ -1,0 +1,30 @@
+Cette APP doit faire comprendre qu’on entre sur une plateforme exclusive, un parcours pour les demandeurs qui sera plus long que pour la majorité des autres bouteilles de vin
+
+
+
+Cette APP doit permettre :
+
+    aux allocataires de Fuori Marmo d’accéder à leur profile, la situation en temps réel de ce qui est commandé (leur cave virtuelle de Fuori Marmo, livré ou à livrer), de ce qui va être proposé à la vente… et des avantages liés à chaque profile 1, 2 ou 3 (les noms viendront après). Chaque profile correspondra à une couleur du logo de l’APP différente
+        adresse de facturation
+        adresse de livraison
+        eshop sécurisé 
+
+Donc les gens qui ont déjà acheté Fuori Marmo vont recevoir un message pour accéder à leur profile, l’activer
+
+    aux personnes désireuses de faire une demande d’allocation de s’inscrire et de recevoir une notification de délai éventuellement avant de recevoir la confirmation
+    un message annuel devrait être envoyé pour proposer à la vente différents lots de vins qui correspondront à un des trois statuts du profile de l’allocataire (plus il dépense, plus il reçoit de privilèges) et vu que la caisse et l’étiquette seront personnalisables, il faudrait idéalement une image de l’une et de l’autre qui lui permettent, étape par étape, de construire son étiquette avec les éléments qu’il a le droit de personnaliser (initiales, nom) mais aussi les vélines (papier de riz ou de soie qui entoure la bouteille (il peut envoyer ses initiales ou un logo).
+    Un autre privilège sera une cooptation d’une personne pour l’intégrer sur la liste d’attente « racourcie »
+    Un autre privilège (1 prioritaire 2 accès 3 Rien) à des cuvées très limitées
+    Dans le temps leur donner accès à d’anciens millésimes
+    Accès au repas annuel dans la carrière de marbre
+    permettre aux allocataires et liste d’attente d’envoyer une requête spéciale (dégustation privée, événement privé)
+    de recenser les endroits qui ont Fuori Marmo à la carte (max 50 endroits dans une première phase)
+    explication des étiquettes. Le premier millésime représente un palindrome et les millésime suivants seront déclinés autour du nouveau logo de Fuori Marmo
+
+ 
+
+J’imagine qu’il y a des mentions légales de différentes sortes qui doivent apparaître.
+
+ 
+
+Voilà ce qui me vient à l’esprit aujourd’hui mais j’imagine qu’il y aura plein de questions… on peut s’entendre cette semaine si tu veux
