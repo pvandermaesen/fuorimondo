@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: fuorimondo-backend
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 7d
+      cookie:
+        name: FMSESSION
+        http-only: true
+        same-site: strict
+        # secure: true  (activé en prod uniquement)
+
+fuorimondo:
+  invitation-code:
+    length: 6
+    expiration-days: 90
+  password-reset:
+    expiration-hours: 1
+  rate-limit:
+    login-attempts-per-15min: 5
+    activation-attempts-per-15min: 5
+    reset-attempts-per-15min: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
