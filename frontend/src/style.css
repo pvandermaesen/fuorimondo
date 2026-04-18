@@ -1,0 +1,36 @@
+@import url("https://use.typekit.net/zfz7fmi.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: theme(fontFamily.sans);
+    color: theme(colors.fm.black);
+    background: theme(colors.fm.white);
+  }
+  body {
+    min-height: 100vh;
+    margin: 0;
+  }
+  h1, h2, h3 {
+    font-family: theme(fontFamily.logo);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+}
+
+@layer components {
+  .fm-page {
+    @apply mx-auto max-w-mobile px-5 py-6;
+  }
+  .fm-card {
+    @apply bg-fm-white border border-fm-gray/30 rounded-sm p-4;
+  }
+  .fm-legal-banner {
+    @apply text-xs text-fm-red border border-fm-red/30 bg-fm-red/5 rounded-sm px-3 py-2 mb-4;
+  }
+}
