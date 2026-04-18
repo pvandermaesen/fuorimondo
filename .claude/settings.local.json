@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls C:\\\\\\\\kdrive\\\\\\\\work\\\\\\\\claude\\\\\\\\FuoriMondo/)",
+      "Bash(git diff-tree *)",
+      "Bash(java --version)",
+      "Bash(mvn dependency:resolve -q)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(timeout 30 mvn spring-boot:run -Dspring-boot.run.profiles=dev)",
+      "Bash(tee /tmp/mvn_output.log)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 26612 /F)",
+      "Bash(pkill -9 -f java)",
+      "Bash(timeout 30 mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dserver.port=8081)",
+      "Bash(rm -rf /c/kdrive/work/claude/FuoriMondo/backend/data)",
+      "Bash(timeout 120 mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments=\"-Dserver.port=8090\")",
+      "Bash(pkill -f \"fuorimondo-backend\")",
+      "Bash(mvn test *)",
+      "Bash(pip install *)",
+      "Bash(python -c ' *)",
+      "Bash(npx --version)",
+      "Bash(npm create *)",
+      "Bash(npx --yes create-vite@latest frontend --template vue-ts)",
+      "Bash(nvm list *)",
+      "Bash(nvm use *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(npx playwright *)",
+      "Bash(rm -rf \"/c/kdrive/work/claude/FuoriMondo/backend/data\")",
+      "Bash(java -jar target/fuorimondo-backend-0.1.0-SNAPSHOT.jar --spring.profiles.active=dev)",
+      "Bash(echo \"Started backend, PID=$!\" sleep 25 echo \"---\" grep -E \"\\(Started|SEED ADMIN|ERROR\\)\" /tmp/fm_back.log)",
+      "Bash(java -jar target/fuorimondo-backend-0.1.0-SNAPSHOT.jar --spring.profiles.active=dev --server.port=8081)",
+      "Bash(echo \"Started, PID=$!\" sleep 30 echo \"---\" grep -E \"\\(Started FuoriMondoApplication|SEED ADMIN|ERROR\\)\" /tmp/fm_back.log)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(echo \"Started vite, PID=$!\" sleep 6 echo \"---\" tail -5 /tmp/fm_vite.log echo \"---\" curl -s -X POST http://localhost:5273/api/auth/register -H \"Content-Type: application/json\" -H \"X-XSRF-TOKEN: dummy\" -d '{\"email\":\"curl@e2e.test\",\"firstName\":\"C\",\"lastName\":\"T\",\"country\":\"FR\",\"city\":\"X\",\"locale\":\"FR\",\"password\":\"aVerySecurePass123!\",\"acceptTerms\":true,\"acceptPrivacy\":true}' -i)",
+      "Bash(export PATH=\"/c/nvm4w/nodejs:$PATH\")",
+      "Bash(npm run *)",
+      "Bash(echo \"Started, PID=$!\")",
+      "Bash(curl -s -c /tmp/fm_cookies.txt http://localhost:5273/api/legal/cgu -o /dev/null)",
+      "Bash(pkill -f \"vite\")",
+      "Read(//e//**)"
+    ]
+  }
+}
