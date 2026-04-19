@@ -31,6 +31,8 @@ mollie:
   enabled: false
 
 fuorimondo:
+  # Relaxed rate limits for local development and Playwright E2E stability.
+  # Prod/staging use the defaults from application.yml (5 attempts / 15 min).
   rate-limit:
     login-attempts-per-15min: 1000
     activation-attempts-per-15min: 1000

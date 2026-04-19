@@ -1,5 +1,6 @@
 package com.fuorimondo.payments;
 
+import com.fuorimondo.orders.OrderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,16 +48,18 @@ public class MolliePaymentGatewayHttp implements MolliePaymentGateway {
                 .body(body)
                 .retrieve()
                 .body(Map.class);
-            if (resp == null) throw new OrderGatewayException("empty response");
+            if (resp == null) throw gatewayError("empty response");
             String id = (String) resp.get("id");
             String status = (String) resp.get("status");
             Map<?,?> links = (Map<?,?>) resp.get("_links");
             Map<?,?> checkout = links == null ? null : (Map<?,?>) links.get("checkout");
             String href = checkout == null ? null : (String) checkout.get("href");
             return new MolliePayment(id, parseStatus(status), href);
+        } catch (OrderException e) {
+            throw e;
         } catch (Exception e) {
             log.warn("Mollie createPayment failed: {}", e.getMessage());
-            throw new OrderGatewayException("Mollie createPayment failed: " + e.getMessage());
+            throw gatewayError("Mollie createPayment failed: " + e.getMessage());
         }
     }
 
@@ -67,12 +70,14 @@ public class MolliePaymentGatewayHttp implements MolliePaymentGateway {
                 .uri("/payments/{id}", molliePaymentId)
                 .retrieve()
                 .body(Map.class);
-            if (resp == null) throw new OrderGatewayException("empty response");
+            if (resp == null) throw gatewayError("empty response");
             String status = (String) resp.get("status");
             return new MolliePayment(molliePaymentId, parseStatus(status), null);
+        } catch (OrderException e) {
+            throw e;
         } catch (Exception e) {
             log.warn("Mollie getPayment failed: {}", e.getMessage());
-            throw new OrderGatewayException("Mollie getPayment failed: " + e.getMessage());
+            throw gatewayError("Mollie getPayment failed: " + e.getMessage());
         }
     }
 
@@ -81,7 +86,7 @@ public class MolliePaymentGatewayHttp implements MolliePaymentGateway {
         return MolliePaymentStatus.valueOf(s.toUpperCase(Locale.ROOT));
     }
 
-    public static class OrderGatewayException extends RuntimeException {
-        public OrderGatewayException(String msg) { super(msg); }
+    private static OrderException gatewayError(String msg) {
+        return new OrderException(OrderException.Reason.PAYMENT_GATEWAY_ERROR, msg);
     }
 }

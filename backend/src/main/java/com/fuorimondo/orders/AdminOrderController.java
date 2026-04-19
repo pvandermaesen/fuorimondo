@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuorimondo.orders.dto.AdminOrderResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -28,7 +30,8 @@ public class AdminOrderController {
 
     @GetMapping("/{id}")
     public AdminOrderResponse detail(@PathVariable UUID id) {
-        Order o = repository.findById(id).orElseThrow();
+        Order o = repository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return AdminOrderResponse.from(o, json);
     }
 }
