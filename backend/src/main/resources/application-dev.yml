@@ -29,3 +29,9 @@ logging:
 
 mollie:
   enabled: false
+
+fuorimondo:
+  rate-limit:
+    login-attempts-per-15min: 1000
+    activation-attempts-per-15min: 1000
+    reset-attempts-per-15min: 1000
