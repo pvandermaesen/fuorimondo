@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { api, ApiException } from '../api/client';
@@ -16,6 +16,13 @@ const form = reactive({ email: '', code: '', password: '' });
 const error = ref<string | null>(null);
 const busy = ref(false);
 
+const passwordHint = computed(() => {
+  const len = form.password.length;
+  if (len === 0) return t('activate.passwordHint');
+  if (len >= 8) return '';
+  return `${t('activate.passwordHint')} (${len}/8)`;
+});
+
 async function verify() {
   error.value = null;
   busy.value = true;
@@ -30,13 +37,21 @@ async function verify() {
 
 async function setPassword() {
   error.value = null;
+  if (form.password.length < 8) {
+    error.value = t('activate.passwordTooShort');
+    return;
+  }
   busy.value = true;
   try {
     await api.post('/auth/activate', { email: form.email, code: form.code.toUpperCase(), password: form.password });
     await auth.login({ email: form.email, password: form.password });
     step.value = 3;
   } catch (err) {
-    error.value = t('common.error');
+    if (err instanceof ApiException && err.payload?.details?.length) {
+      error.value = err.payload.details.join(' — ');
+    } else {
+      error.value = t('common.error');
+    }
   } finally { busy.value = false; }
 }
 </script>
@@ -49,7 +64,7 @@ async function setPassword() {
       <p class="text-sm text-fm-black/70 mb-5">{{ t('activate.step1') }}</p>
       <form @submit.prevent="verify">
         <FmInput v-model="form.email" :label="t('common.email')" type="email" required autocomplete="email" data-testid="act-email" />
-        <FmInput v-model="form.code" :label="t('activate.code')" required :maxlength="6" data-testid="act-code" />
+        <FmInput v-model="form.code" :label="t('activate.code')" required :minlength="6" :maxlength="10" data-testid="act-code" />
         <p v-if="error" class="text-sm text-fm-red mb-3">{{ error }}</p>
         <FmButton block type="submit" :disabled="busy" data-testid="act-verify">{{ t('activate.verifyCode') }}</FmButton>
       </form>
@@ -58,7 +73,7 @@ async function setPassword() {
     <div v-else-if="step === 2">
       <p class="text-sm text-fm-black/70 mb-5">{{ t('activate.step2') }}</p>
       <form @submit.prevent="setPassword">
-        <FmInput v-model="form.password" :label="t('activate.newPassword')" type="password" required autocomplete="new-password" data-testid="act-password" />
+        <FmInput v-model="form.password" :label="t('activate.newPassword')" type="password" required :minlength="8" :hint="passwordHint" autocomplete="new-password" data-testid="act-password" />
         <p v-if="error" class="text-sm text-fm-red mb-3">{{ error }}</p>
         <FmButton block type="submit" :disabled="busy" data-testid="act-submit">{{ t('common.continue') }}</FmButton>
       </form>

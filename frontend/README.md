@@ -5,7 +5,7 @@ Vue 3 + Vite + Tailwind + TypeScript. Mobile-first.
 ## Prérequis
 
 - Node 20+ (testé avec Node 24)
-- Backend FuoriMondo démarré (défaut: port 8081, via `java -jar ... --server.port=8081 --spring.profiles.active=dev`)
+- Backend FuoriMondo démarré (défaut: port 8080, via `mvn spring-boot:run -Dspring-boot.run.profiles=dev` ou `java -jar ... --spring.profiles.active=dev`)
 
 ## Développement
 
@@ -14,14 +14,14 @@ npm install
 npm run dev
 ```
 
-Vite dev sur http://localhost:5273 avec proxy `/api` → `http://localhost:8081` (configurable via `VITE_API_URL`).
+Vite dev sur http://localhost:5273 avec proxy `/api` → `http://localhost:8080` (configurable via `VITE_API_URL`).
 
 ## Tests E2E (Playwright)
 
 ```bash
 # dans un terminal : démarrer le backend
 cd ../backend && java -jar target/fuorimondo-backend-0.1.0-SNAPSHOT.jar \
-  --spring.profiles.active=dev --server.port=8081
+  --spring.profiles.active=dev --server.port=8080
 
 # dans un autre terminal : lancer les tests (Playwright démarre Vite auto)
 npm run test:e2e

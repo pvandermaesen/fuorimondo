@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { api } from '../../api/client';
@@ -11,12 +11,22 @@ const router = useRouter();
 
 const products = ref<ProductResponse[]>([]);
 const loading = ref(true);
+const showExpired = ref(false);
 
 async function load() {
   loading.value = true;
   products.value = await api.get<ProductResponse[]>('/admin/products');
   loading.value = false;
 }
+
+function isExpired(p: ProductResponse): boolean {
+  return p.saleEndAt != null && new Date(p.saleEndAt).getTime() < Date.now();
+}
+
+const expiredCount = computed(() => products.value.filter(isExpired).length);
+const visibleProducts = computed(() =>
+  products.value.filter(p => showExpired.value ? isExpired(p) : !isExpired(p))
+);
 
 function fmtPrice(v: string) { return `${Number(v).toFixed(2)} €`; }
 function fmtDate(v: string | null) { return v ? new Date(v).toLocaleString('fr-FR') : '—'; }
@@ -35,19 +45,32 @@ onMounted(load);
     </div>
 
     <p v-if="loading" class="text-sm">{{ t('common.loading') }}</p>
-    <p v-else-if="products.length === 0" class="text-sm text-fm-black/60">{{ t('admin.products.empty') }}</p>
-    <ul v-else class="divide-y divide-fm-black/10">
-      <li v-for="p in products" :key="p.id" class="py-3">
-        <button class="w-full text-left flex justify-between items-start gap-3"
-                @click="router.push({ name: 'admin-product-detail', params: { id: p.id } })">
-          <div>
-            <div class="font-medium">{{ p.name }}</div>
-            <div class="text-xs text-fm-black/60">{{ fmtPrice(p.priceEur) }} · {{ p.tiers.join(', ') }}</div>
-            <div class="text-xs text-fm-black/60">{{ t('admin.products.saleStart') }} : {{ fmtDate(p.saleStartAt) }} · {{ t('admin.products.stock') }} : {{ fmtStock(p.stock) }}</div>
-          </div>
-          <span class="text-xs text-fm-black/40">→</span>
-        </button>
-      </li>
-    </ul>
+    <p v-else-if="visibleProducts.length === 0" class="text-sm text-fm-black/60">{{ t('admin.products.empty') }}</p>
+    <div v-else class="grid grid-cols-2 gap-3">
+      <button v-for="p in visibleProducts" :key="p.id"
+              class="text-left border border-fm-black/10 rounded-lg overflow-hidden bg-fm-white hover:border-fm-black/30 transition-colors flex flex-col"
+              :class="{ 'opacity-60': isExpired(p) }"
+              @click="router.push({ name: 'admin-product-detail', params: { id: p.id } })">
+        <div class="aspect-square bg-fm-stone flex items-center justify-center overflow-hidden relative">
+          <img v-if="p.photoFilename" :src="`/api/admin/products/${p.id}/photo`" alt="" class="w-full h-full object-cover" />
+          <span v-else class="text-xs text-fm-black/40">{{ t('admin.products.noPhoto') }}</span>
+          <span v-if="isExpired(p)" class="absolute top-2 left-2 text-[10px] uppercase tracking-widest bg-fm-black text-fm-white px-2 py-0.5 rounded">
+            {{ t('admin.products.expiredBadge') }}
+          </span>
+        </div>
+        <div class="p-3 space-y-1">
+          <div class="font-medium text-sm leading-tight">{{ p.name }}</div>
+          <div class="text-xs text-fm-black/60">{{ fmtPrice(p.priceEur) }} · {{ p.tiers.join(', ') }}</div>
+          <div class="text-xs text-fm-black/60">{{ t('admin.products.stock') }} : {{ fmtStock(p.stock) }}</div>
+          <div class="text-xs text-fm-black/50">{{ fmtDate(p.saleStartAt) }}</div>
+        </div>
+      </button>
+    </div>
+
+    <div v-if="!loading && expiredCount > 0" class="mt-6 text-center">
+      <FmButton variant="ghost" @click="showExpired = !showExpired">
+        {{ showExpired ? t('admin.products.hideExpired') : t('admin.products.showExpired') }} ({{ expiredCount }})
+      </FmButton>
+    </div>
   </div>
 </template>

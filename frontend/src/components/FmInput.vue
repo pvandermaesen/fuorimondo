@@ -8,6 +8,8 @@ defineProps<{
   autocomplete?: string;
   error?: string;
   maxlength?: number | string;
+  minlength?: number | string;
+  hint?: string;
 }>();
 defineEmits<{ (e: 'update:modelValue', v: string): void }>();
 </script>
@@ -22,6 +24,7 @@ defineEmits<{ (e: 'update:modelValue', v: string): void }>();
       :required="required"
       :autocomplete="autocomplete"
       :maxlength="maxlength"
+      :minlength="minlength"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       :class="[
         'block w-full border-0 border-b bg-transparent py-2 focus:outline-none focus:ring-0',
@@ -29,5 +32,6 @@ defineEmits<{ (e: 'update:modelValue', v: string): void }>();
       ]"
     />
     <span v-if="error" class="text-xs text-fm-red mt-1 block">{{ error }}</span>
+    <span v-else-if="hint" class="text-xs text-fm-black/50 mt-1 block">{{ hint }}</span>
   </label>
 </template>

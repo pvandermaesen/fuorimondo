@@ -4,11 +4,13 @@ defineProps<{ size?: 'sm' | 'md' | 'lg' }>();
 
 <template>
   <div class="text-center select-none">
-    <h1
+    <router-link
+      to="/"
       :class="[
-        'font-logo tracking-[0.25em] text-fm-black',
+        'font-logo tracking-[0.25em] text-fm-black block',
         size === 'lg' ? 'text-3xl' : size === 'sm' ? 'text-lg' : 'text-2xl',
       ]"
-    >FUORI MARMO</h1>
+      aria-label="Fuori Marmo"
+    >FUORI MARMO</router-link>
   </div>
 </template>

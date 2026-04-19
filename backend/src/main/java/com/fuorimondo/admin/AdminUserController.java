@@ -22,6 +22,7 @@ public class AdminUserController {
     public AdminUserController(AdminUserService service) { this.service = service; }
 
     public record CreateAllocataireResponse(AdminUserResponse user, String code) {}
+    public record RegenerateCodeResponse(String code) {}
 
     @GetMapping
     public Page<AdminUserResponse> list(@RequestParam(required = false) String status,
@@ -32,7 +33,8 @@ public class AdminUserController {
 
     @GetMapping("/{id}")
     public AdminUserResponse get(@PathVariable UUID id) {
-        return AdminUserResponse.from(service.getById(id));
+        var detail = service.getDetail(id);
+        return AdminUserResponse.from(detail.user(), detail.code());
     }
 
     @PostMapping
@@ -45,9 +47,9 @@ public class AdminUserController {
     }
 
     @PostMapping("/{id}/regenerate-code")
-    public ResponseEntity<String> regenerate(@AuthenticationPrincipal CustomUserDetails principal,
+    public RegenerateCodeResponse regenerate(@AuthenticationPrincipal CustomUserDetails principal,
                                               @PathVariable UUID id) {
-        return ResponseEntity.ok(service.regenerateCode(id, principal.getUserId()));
+        return new RegenerateCodeResponse(service.regenerateCode(id, principal.getUserId()));
     }
 
     @PatchMapping("/{id}")

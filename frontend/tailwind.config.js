@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{vue,ts,js}"],
   theme: {
     extend: {
+      screens: {
+        desk: "1000px",
+      },
       colors: {
         fm: {
           white: "#FFFFFF",

@@ -44,6 +44,15 @@ public class AdminUserService {
         return userRepository.findById(id).orElseThrow();
     }
 
+    @Transactional(readOnly = true)
+    public UserWithCode getDetail(UUID id) {
+        User u = userRepository.findById(id).orElseThrow();
+        InvitationCode ic = codeRepository.findByUserId(id).orElse(null);
+        return new UserWithCode(u, ic);
+    }
+
+    public record UserWithCode(User user, InvitationCode code) {}
+
     @Transactional
     public CreateAllocataireResult createAllocataire(CreateAllocataireRequest req, UUID adminId) {
         if (userRepository.existsByEmailIgnoreCase(req.email())) {

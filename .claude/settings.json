@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/opt/jdk-17/bin/java.exe\" -jar target/fuorimondo-*.jar --spring.profiles.active=dev)",
+      "Bash(echo \"Building backend in background PID: $!\")",
+      "Bash(curl -s --connect-timeout 3 http://localhost:8080/api/legal/cgu)",
+      "Bash(git -C c:/kdrive/work/claude/FuoriMondo log --oneline --follow -- frontend/e2e/splash.spec.ts)",
+      "Bash(git -C c:/kdrive/work/claude/FuoriMondo stash pop)"
+    ]
+  }
+}

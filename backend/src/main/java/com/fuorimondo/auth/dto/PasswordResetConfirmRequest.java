@@ -5,5 +5,5 @@ import jakarta.validation.constraints.Size;
 
 public record PasswordResetConfirmRequest(
     @NotBlank String token,
-    @NotBlank @Size(min = 12, max = 200) String password
+    @NotBlank @Size(min = 8, max = 200) String password
 ) {}

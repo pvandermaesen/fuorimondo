@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { api } from '../../api/client';
@@ -9,17 +9,42 @@ import FmInput from '../../components/FmInput.vue';
 import FmButton from '../../components/FmButton.vue';
 import TierBadge from '../../components/TierBadge.vue';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 
 const user = ref<AdminUserResponse | null>(null);
-const newCode = ref<string | null>(null);
 const busy = ref(false);
+const copied = ref(false);
 
 const form = ref<UpdateUserByAdminRequest>({ status: undefined, tierCode: undefined, adminNotes: '' });
 
 const statusOpts = (['WAITING_LIST', 'ALLOCATAIRE_PENDING', 'ALLOCATAIRE', 'SUSPENDED'] as const).map(v => ({ value: v, label: t(`status.${v}`) }));
 const tierOpts = (['TIER_1', 'TIER_2', 'TIER_3'] as const).map(v => ({ value: v, label: t(`tiers.${v}`) }));
+
+const codeState = computed(() => {
+  const u = user.value;
+  if (!u || !u.invitationCode) return null;
+  if (u.invitationCodeUsedAt) return 'used' as const;
+  if (u.invitationCodeExpiresAt && new Date(u.invitationCodeExpiresAt).getTime() < Date.now()) return 'expired' as const;
+  return 'valid' as const;
+});
+
+async function copyCode() {
+  const code = user.value?.invitationCode;
+  if (!code) return;
+  try {
+    await navigator.clipboard.writeText(code);
+    copied.value = true;
+    setTimeout(() => { copied.value = false; }, 1500);
+  } catch { /* clipboard unavailable */ }
+}
+
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString(locale.value.toLowerCase(), {
+    day: '2-digit', month: 'long', year: 'numeric',
+  });
+}
 
 async function load() {
   const u = await api.get<AdminUserResponse>(`/admin/users/${route.params.id}`);
@@ -35,9 +60,11 @@ async function save() {
 }
 
 async function regenerate() {
+  if (!confirm(t('admin.confirmRegenerateCode'))) return;
   busy.value = true;
   try {
-    newCode.value = await api.post<string>(`/admin/users/${route.params.id}/regenerate-code`) as unknown as string;
+    await api.post<{ code: string }>(`/admin/users/${route.params.id}/regenerate-code`);
+    await load();
   } finally { busy.value = false; }
 }
 
@@ -53,9 +80,31 @@ onMounted(load);
       <TierBadge :tier="user.tierCode" />
     </div>
 
-    <section v-if="newCode" class="fm-card border-fm-gold bg-fm-stone text-center space-y-2 mb-6">
-      <p class="text-xs uppercase tracking-widest text-fm-black/60">{{ t('admin.codeGenerated') }}</p>
-      <p class="font-logo text-3xl tracking-[0.3em]" data-testid="regenerated-code">{{ newCode }}</p>
+    <section class="fm-card text-center space-y-2 mb-6" data-testid="current-code">
+      <p class="text-xs uppercase tracking-widest text-fm-black/60">{{ t('admin.currentCode') }}</p>
+      <template v-if="user.invitationCode">
+        <div class="flex items-center justify-center gap-3">
+          <p class="font-logo text-3xl tracking-[0.3em]"
+             :class="{ 'line-through text-fm-black/40': codeState !== 'valid' }"
+             data-testid="current-code-value">{{ user.invitationCode }}</p>
+          <button type="button"
+                  class="text-xs underline text-fm-black/60 hover:text-fm-black"
+                  @click="copyCode"
+                  data-testid="copy-code">
+            {{ copied ? t('admin.codeCopied') : t('admin.codeCopy') }}
+          </button>
+        </div>
+        <p v-if="codeState === 'valid'" class="text-xs text-fm-black/60">
+          {{ t('admin.codeValidUntil') }} {{ formatDate(user.invitationCodeExpiresAt) }}
+        </p>
+        <p v-else-if="codeState === 'used'" class="text-xs text-fm-red">
+          {{ t('admin.codeUsed') }} — {{ formatDate(user.invitationCodeUsedAt) }}
+        </p>
+        <p v-else class="text-xs text-fm-red">
+          {{ t('admin.codeExpired') }} — {{ formatDate(user.invitationCodeExpiresAt) }}
+        </p>
+      </template>
+      <p v-else class="text-sm text-fm-black/60">{{ t('admin.codeNone') }}</p>
     </section>
 
     <form @submit.prevent="save" class="space-y-1">

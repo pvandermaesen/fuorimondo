@@ -12,7 +12,7 @@ public record RegisterWaitingListRequest(
     @NotBlank @Size(max = 100) String city,
     @Size(max = 2000) String referrerInfo,
     @NotNull Locale locale,
-    @NotBlank @Size(min = 12, max = 200) String password,
+    @NotBlank @Size(min = 8, max = 200) String password,
     @AssertTrue(message = "must accept terms") boolean acceptTerms,
     @AssertTrue(message = "must accept privacy") boolean acceptPrivacy
 ) {}

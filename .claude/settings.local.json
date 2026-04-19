@@ -37,7 +37,20 @@
       "Bash(echo \"Started, PID=$!\")",
       "Bash(curl -s -c /tmp/fm_cookies.txt http://localhost:5273/api/legal/cgu -o /dev/null)",
       "Bash(pkill -f \"vite\")",
-      "Read(//e//**)"
+      "Read(//e//**)",
+      "Bash(mvn -v)",
+      "Bash(mvn -N wrapper:wrapper)",
+      "Bash(command -v magick)",
+      "Bash(command -v convert)",
+      "Bash(command -v python)",
+      "Bash(command -v python3)",
+      "Bash(python -c \"from PIL import Image; print\\(Image.__version__\\)\")",
+      "Bash(python)",
+      "Bash(./mvnw.cmd spring-boot:run \"-Dspring-boot.run.profiles=dev\")",
+      "Bash(./mvnw.cmd compile *)",
+      "Bash(./mvnw.cmd test *)",
+      "Bash(./mvnw.cmd test-compile *)",
+      "Bash(./mvnw.cmd clean *)"
     ]
   }
 }
