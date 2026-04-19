@@ -27,7 +27,7 @@ async function load() {
 }
 
 function photoUrl(id: string): string {
-  return `/api/admin/products/${id}/photo`;
+  return `/api/products/${id}/photo`;
 }
 
 onMounted(load);

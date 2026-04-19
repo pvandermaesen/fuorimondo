@@ -30,7 +30,7 @@ function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString(locale.value.toLowerCase(), { day: '2-digit', month: 'long', year: 'numeric' });
 }
 function photoUrl(id: string): string {
-  return `/api/admin/products/${id}/photo`;
+  return `/api/products/${id}/photo`;
 }
 
 async function load() {
