@@ -42,6 +42,6 @@ public class DevSimulateWebhookController {
         // Trigger the real webhook handler so the transition + email logic runs
         webhookController.mollie(o.getMolliePaymentId());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
