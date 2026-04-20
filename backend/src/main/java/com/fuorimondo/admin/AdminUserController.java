@@ -57,4 +57,18 @@ public class AdminUserController {
                                      @Valid @RequestBody UpdateUserByAdminRequest req) {
         return AdminUserResponse.from(service.update(id, req));
     }
+
+    @GetMapping("/parrains")
+    public java.util.List<com.fuorimondo.admin.dto.ParrainOption> searchParrains(
+            @RequestParam(required = false) String q) {
+        return service.searchParrains(q).stream()
+            .map(com.fuorimondo.admin.dto.ParrainOption::from)
+            .toList();
+    }
+
+    @PutMapping("/{id}/parrain")
+    public AdminUserResponse setParrain(@PathVariable UUID id,
+                                         @RequestBody com.fuorimondo.admin.dto.SetParrainRequest req) {
+        return AdminUserResponse.from(service.setParrain(id, req.parrainId()));
+    }
 }

@@ -1,5 +1,6 @@
 package com.fuorimondo.common;
 
+import com.fuorimondo.admin.AdminUserService;
 import com.fuorimondo.auth.AuthException;
 import com.fuorimondo.orders.OrderException;
 import jakarta.validation.ConstraintViolationException;
@@ -55,5 +56,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleConstraint(ConstraintViolationException ex) {
         log.info("Constraint violation: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(ApiError.of("constraint_violation", ex.getMessage()));
+    }
+
+    @ExceptionHandler(AdminUserService.ParrainException.class)
+    public ResponseEntity<ApiError> handleParrain(AdminUserService.ParrainException ex) {
+        HttpStatus status = switch (ex.getReason()) {
+            case SELF_LINK          -> HttpStatus.BAD_REQUEST;
+            case TARGET_NOT_PARRAIN -> HttpStatus.CONFLICT;
+        };
+        log.info("Parrain rejected [{}]: {} -> {}", ex.getReason(), ex.getMessage(), status.value());
+        return ResponseEntity.status(status).body(ApiError.of(ex.getReason().name().toLowerCase(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(java.util.NoSuchElementException.class)
+    public ResponseEntity<ApiError> handleNotFound(java.util.NoSuchElementException ex) {
+        log.info("Resource not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ApiError.of("not_found", ex.getMessage() != null ? ex.getMessage() : "Resource not found"));
     }
 }
