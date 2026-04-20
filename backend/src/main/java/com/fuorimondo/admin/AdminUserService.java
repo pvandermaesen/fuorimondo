@@ -105,7 +105,8 @@ public class AdminUserService {
 
     @Transactional
     public User setParrain(UUID userId, UUID parrainId) {
-        User u = userRepository.findById(userId).orElseThrow();
+        User u = userRepository.findById(userId)
+            .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("User not found: " + userId));
         if (parrainId == null) {
             u.setParrain(null);
             return u;
@@ -113,7 +114,8 @@ public class AdminUserService {
         if (parrainId.equals(userId)) {
             throw new ParrainException(ParrainException.Reason.SELF_LINK, "A user cannot be their own parrain");
         }
-        User p = userRepository.findById(parrainId).orElseThrow();
+        User p = userRepository.findById(parrainId)
+            .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Parrain not found: " + parrainId));
         if (!p.isParrain()) {
             throw new ParrainException(ParrainException.Reason.TARGET_NOT_PARRAIN, "Target user is not a parrain");
         }

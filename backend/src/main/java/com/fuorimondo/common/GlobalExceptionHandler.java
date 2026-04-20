@@ -3,6 +3,7 @@ package com.fuorimondo.common;
 import com.fuorimondo.admin.AdminUserService;
 import com.fuorimondo.auth.AuthException;
 import com.fuorimondo.orders.OrderException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +69,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(ApiError.of(ex.getReason().name().toLowerCase(), ex.getMessage()));
     }
 
-    @ExceptionHandler(java.util.NoSuchElementException.class)
-    public ResponseEntity<ApiError> handleNotFound(java.util.NoSuchElementException ex) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(EntityNotFoundException ex) {
         log.info("Resource not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ApiError.of("not_found", ex.getMessage() != null ? ex.getMessage() : "Resource not found"));

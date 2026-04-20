@@ -2,6 +2,8 @@ package com.fuorimondo.admin;
 
 import com.fuorimondo.admin.dto.AdminUserResponse;
 import com.fuorimondo.admin.dto.CreateAllocataireRequest;
+import com.fuorimondo.admin.dto.ParrainOption;
+import com.fuorimondo.admin.dto.SetParrainRequest;
 import com.fuorimondo.admin.dto.UpdateUserByAdminRequest;
 import com.fuorimondo.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -59,16 +62,14 @@ public class AdminUserController {
     }
 
     @GetMapping("/parrains")
-    public java.util.List<com.fuorimondo.admin.dto.ParrainOption> searchParrains(
-            @RequestParam(required = false) String q) {
+    public List<ParrainOption> searchParrains(@RequestParam(required = false) String q) {
         return service.searchParrains(q).stream()
-            .map(com.fuorimondo.admin.dto.ParrainOption::from)
+            .map(ParrainOption::from)
             .toList();
     }
 
     @PutMapping("/{id}/parrain")
-    public AdminUserResponse setParrain(@PathVariable UUID id,
-                                         @RequestBody com.fuorimondo.admin.dto.SetParrainRequest req) {
+    public AdminUserResponse setParrain(@PathVariable UUID id, @RequestBody SetParrainRequest req) {
         return AdminUserResponse.from(service.setParrain(id, req.parrainId()));
     }
 }
