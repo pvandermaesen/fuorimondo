@@ -58,6 +58,13 @@ public class User extends BaseEntity {
     @Column(name = "admin_notes", columnDefinition = "TEXT")
     private String adminNotes;
 
+    @Column(name = "is_parrain", nullable = false)
+    private boolean isParrain = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parrain_id")
+    private User parrain;
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email == null ? null : email.toLowerCase(); }
     public String getFirstName() { return firstName; }
@@ -88,4 +95,8 @@ public class User extends BaseEntity {
     public void setLocale(Locale locale) { this.locale = locale; }
     public String getAdminNotes() { return adminNotes; }
     public void setAdminNotes(String adminNotes) { this.adminNotes = adminNotes; }
+    public boolean isParrain() { return isParrain; }
+    public void setParrain(boolean parrain) { this.isParrain = parrain; }
+    public User getParrain() { return parrain; }
+    public void setParrain(User parrain) { this.parrain = parrain; }
 }
