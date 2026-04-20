@@ -108,6 +108,8 @@ export default {
     codeExpired: 'Expired', codeUsed: 'Used', codeNone: 'No active code',
     regenerateCode: 'Regenerate code', updateUser: 'Update',
     parrainSection: 'Sponsorship',
+    godchildrenCount: 'Godchildren: {n}',
+    noGodchildren: 'No godchildren yet',
     isParrain: 'This user is a sponsor',
     parrainLabel: 'Sponsor of this user',
     parrainSearchPlaceholder: 'Search for a sponsor…',

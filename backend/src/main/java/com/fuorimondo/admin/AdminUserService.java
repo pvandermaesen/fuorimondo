@@ -50,10 +50,11 @@ public class AdminUserService {
     public UserWithCode getDetail(UUID id) {
         User u = userRepository.findById(id).orElseThrow();
         InvitationCode ic = codeRepository.findByUserId(id).orElse(null);
-        return new UserWithCode(u, ic);
+        Long godchildren = u.isParrain() ? userRepository.countByParrainId(id) : null;
+        return new UserWithCode(u, ic, godchildren);
     }
 
-    public record UserWithCode(User user, InvitationCode code) {}
+    public record UserWithCode(User user, InvitationCode code, Long godchildrenCount) {}
 
     @Transactional
     public CreateAllocataireResult createAllocataire(CreateAllocataireRequest req, UUID adminId) {

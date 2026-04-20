@@ -108,6 +108,8 @@ export default {
     codeExpired: 'Scaduto', codeUsed: 'Utilizzato', codeNone: 'Nessun codice attivo',
     regenerateCode: 'Rigenera un codice', updateUser: 'Aggiorna',
     parrainSection: 'Sponsorizzazione',
+    godchildrenCount: 'Figliocci : {n}',
+    noGodchildren: 'Nessun figlioccio al momento',
     isParrain: 'Questo utente è uno sponsor',
     parrainLabel: 'Sponsor di questo utente',
     parrainSearchPlaceholder: 'Cerca uno sponsor…',

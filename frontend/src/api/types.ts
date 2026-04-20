@@ -32,6 +32,7 @@ export interface AdminUserResponse extends UserResponse {
   parrainId: string | null;
   parrainFirstName: string | null;
   parrainLastName: string | null;
+  godchildrenCount: number | null;
 }
 
 export interface AddressResponse {

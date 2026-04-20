@@ -31,4 +31,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         ORDER BY u.lastName ASC, u.firstName ASC
         """)
     List<User> searchParrains(@Param("q") String q, Pageable pageable);
+
+    long countByParrainId(UUID parrainId);
 }

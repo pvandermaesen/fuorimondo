@@ -37,7 +37,7 @@ public class AdminUserController {
     @GetMapping("/{id}")
     public AdminUserResponse get(@PathVariable UUID id) {
         var detail = service.getDetail(id);
-        return AdminUserResponse.from(detail.user(), detail.code());
+        return AdminUserResponse.from(detail.user(), detail.code(), detail.godchildrenCount());
     }
 
     @PostMapping

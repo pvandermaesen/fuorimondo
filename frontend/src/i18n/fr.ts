@@ -152,6 +152,8 @@ export default {
     regenerateCode: 'Régénérer un code',
     updateUser: 'Mettre à jour',
     parrainSection: 'Parrainage',
+    godchildrenCount: 'Filleuls : {n}',
+    noGodchildren: 'Aucun filleul pour le moment',
     isParrain: 'Cet utilisateur est un parrain',
     parrainLabel: 'Parrain de cet utilisateur',
     parrainSearchPlaceholder: 'Rechercher un parrain…',

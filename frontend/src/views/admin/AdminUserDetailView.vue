@@ -144,6 +144,15 @@ onMounted(load);
                 :label="t('admin.isParrain')"
                 @update:modelValue="(v: boolean) => { form.isParrain = v; save(); }" />
 
+      <p v-if="user.isParrain" class="text-sm text-fm-black/70" data-testid="godchildren-count">
+        <template v-if="(user.godchildrenCount ?? 0) > 0">
+          {{ t('admin.godchildrenCount', { n: user.godchildrenCount }) }}
+        </template>
+        <template v-else>
+          {{ t('admin.noGodchildren') }}
+        </template>
+      </p>
+
       <ParrainAutocomplete
         v-if="!form.isParrain"
         :modelValue="parrainSelected"

@@ -12,13 +12,18 @@ public record AdminUserResponse(
     UserStatus status, UserRole role, TierCode tierCode, Locale locale,
     String referrerInfo, String adminNotes, Instant createdAt,
     String invitationCode, Instant invitationCodeExpiresAt, Instant invitationCodeUsedAt,
-    boolean isParrain, UUID parrainId, String parrainFirstName, String parrainLastName
+    boolean isParrain, UUID parrainId, String parrainFirstName, String parrainLastName,
+    Long godchildrenCount
 ) {
     public static AdminUserResponse from(User u) {
-        return from(u, null);
+        return from(u, null, null);
     }
 
     public static AdminUserResponse from(User u, InvitationCode ic) {
+        return from(u, ic, null);
+    }
+
+    public static AdminUserResponse from(User u, InvitationCode ic, Long godchildrenCount) {
         User p = u.getParrain();
         return new AdminUserResponse(u.getId(), u.getEmail(), u.getFirstName(), u.getLastName(),
             u.getCivility(), u.getBirthDate(), u.getPhone(), u.getCountry(), u.getCity(),
@@ -30,6 +35,7 @@ public record AdminUserResponse(
             u.isParrain(),
             p != null ? p.getId() : null,
             p != null ? p.getFirstName() : null,
-            p != null ? p.getLastName() : null);
+            p != null ? p.getLastName() : null,
+            godchildrenCount);
     }
 }
