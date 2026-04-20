@@ -28,6 +28,10 @@ export interface AdminUserResponse extends UserResponse {
   invitationCode: string | null;
   invitationCodeExpiresAt: string | null;
   invitationCodeUsedAt: string | null;
+  isParrain: boolean;
+  parrainId: string | null;
+  parrainFirstName: string | null;
+  parrainLastName: string | null;
 }
 
 export interface AddressResponse {
@@ -125,6 +129,7 @@ export interface UpdateUserByAdminRequest {
   status?: UserStatus;
   tierCode?: TierCode;
   adminNotes?: string;
+  isParrain?: boolean;
 }
 
 export interface Page<T> {
@@ -242,4 +247,15 @@ export interface AdminOrderResponse {
   molliePaymentId: string | null;
   createdAt: string;
   paidAt: string | null;
+}
+
+export interface ParrainOption {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface SetParrainRequest {
+  parrainId: string | null;
 }
