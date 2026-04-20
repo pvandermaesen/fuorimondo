@@ -5,11 +5,13 @@ import com.fuorimondo.admin.dto.UpdateUserByAdminRequest;
 import com.fuorimondo.auth.*;
 import com.fuorimondo.users.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -97,7 +99,32 @@ public class AdminUserService {
         if (req.status() != null) u.setStatus(req.status());
         if (req.tierCode() != null) u.setTierCode(req.tierCode());
         if (req.adminNotes() != null) u.setAdminNotes(req.adminNotes());
+        if (req.isParrain() != null) u.setIsParrain(req.isParrain().booleanValue());
         return u;
+    }
+
+    @Transactional
+    public User setParrain(UUID userId, UUID parrainId) {
+        User u = userRepository.findById(userId).orElseThrow();
+        if (parrainId == null) {
+            u.setParrain(null);
+            return u;
+        }
+        if (parrainId.equals(userId)) {
+            throw new ParrainException(ParrainException.Reason.SELF_LINK, "A user cannot be their own parrain");
+        }
+        User p = userRepository.findById(parrainId).orElseThrow();
+        if (!p.isParrain()) {
+            throw new ParrainException(ParrainException.Reason.TARGET_NOT_PARRAIN, "Target user is not a parrain");
+        }
+        u.setParrain(p);
+        return u;
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> searchParrains(String q) {
+        Pageable limit20 = PageRequest.of(0, 20);
+        return userRepository.searchParrains(q == null ? "" : q.trim(), limit20);
     }
 
     private InvitationCode newCodeFor(User user, User admin) {
@@ -111,4 +138,11 @@ public class AdminUserService {
     }
 
     public record CreateAllocataireResult(User user, String code) {}
+
+    public static class ParrainException extends RuntimeException {
+        public enum Reason { SELF_LINK, TARGET_NOT_PARRAIN }
+        private final Reason reason;
+        public ParrainException(Reason r, String msg) { super(msg); this.reason = r; }
+        public Reason getReason() { return reason; }
+    }
 }
