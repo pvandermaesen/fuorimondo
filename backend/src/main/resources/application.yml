@@ -3,6 +3,9 @@ spring:
     name: fuorimondo-backend
   profiles:
     active: dev
+  threads:
+    virtual:
+      enabled: true
   jpa:
     open-in-view: false
     properties:

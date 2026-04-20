@@ -193,7 +193,6 @@ export interface PublicProductResponse {
   photoFilename: string | null;
   weightKg: string | null;
   delivery: boolean;
-  tiers: TierCode[];
   saleStartAt: string;
   saleEndAt: string | null;
   stockRemaining: number | null;

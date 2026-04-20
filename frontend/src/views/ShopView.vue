@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { api } from '../api/client';
 import type { PublicProductResponse } from '../api/types';
-import TierBadge from '../components/TierBadge.vue';
 
 const { t, locale } = useI18n();
 const router = useRouter();
@@ -52,9 +51,6 @@ onMounted(load);
         <div class="p-4 space-y-2">
           <h3 class="font-serif italic text-lg">{{ p.name }}</h3>
           <p class="font-logo text-xl">{{ fmtPrice(p.priceEur) }}</p>
-          <div class="flex flex-wrap gap-1">
-            <TierBadge v-for="tier in p.tiers" :key="tier" :tier="tier" />
-          </div>
           <div class="text-xs text-fm-black/60 space-y-0.5">
             <p v-if="p.stockRemaining !== null && p.stockRemaining <= 3">{{ t('shop.limitedStock', { n: p.stockRemaining }) }}</p>
             <p v-if="p.delivery">{{ t('shop.delivery') }}</p>

@@ -8,7 +8,7 @@
 #   Caddy (autre machine) → reverse proxy https://www.fuorimondo.com → prod8:6902
 #
 # Prérequis sur prod8 :
-#   java    → JDK natif Ubuntu (sudo apt install openjdk-17-jdk)
+#   java    → JDK natif Ubuntu (sudo apt install openjdk-21-jdk)
 #   node    → via nvm (nvm install --lts)
 #   Maven   → fourni par le Maven wrapper du projet (mvnw), pas d'install requise
 #
@@ -87,7 +87,7 @@ check_prerequisites() {
   if [[ -z "$JAVA_BIN" ]]; then
     error "Java introuvable dans le PATH."
     echo "  → Installez le JDK via apt :"
-    echo "    sudo apt update && sudo apt install -y openjdk-17-jdk"
+    echo "    sudo apt update && sudo apt install -y openjdk-21-jdk"
     missing=1
   else
     local java_version

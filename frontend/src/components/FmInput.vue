@@ -6,6 +6,8 @@ defineProps<{
   required?: boolean;
   placeholder?: string;
   autocomplete?: string;
+  name?: string;
+  id?: string;
   error?: string;
   maxlength?: number | string;
   minlength?: number | string;
@@ -23,6 +25,8 @@ defineEmits<{ (e: 'update:modelValue', v: string): void }>();
       :placeholder="placeholder"
       :required="required"
       :autocomplete="autocomplete"
+      :name="name"
+      :id="id"
       :maxlength="maxlength"
       :minlength="minlength"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"

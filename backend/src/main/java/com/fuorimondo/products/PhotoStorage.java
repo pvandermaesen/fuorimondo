@@ -64,11 +64,14 @@ public class PhotoStorage {
     }
 
     public String contentTypeFor(String filename) {
-        String lower = filename.toLowerCase();
-        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-        if (lower.endsWith(".png")) return "image/png";
-        if (lower.endsWith(".webp")) return "image/webp";
-        return "application/octet-stream";
+        int dot = filename.lastIndexOf('.');
+        String ext = dot >= 0 ? filename.substring(dot).toLowerCase() : "";
+        return switch (ext) {
+            case ".jpg", ".jpeg" -> "image/jpeg";
+            case ".png"          -> "image/png";
+            case ".webp"         -> "image/webp";
+            default              -> "application/octet-stream";
+        };
     }
 
     public void delete(String filename) {

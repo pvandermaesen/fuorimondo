@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n';
 import { api, ApiException } from '../api/client';
 import type { PublicProductResponse, OrderResponse } from '../api/types';
 import FmButton from '../components/FmButton.vue';
-import TierBadge from '../components/TierBadge.vue';
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -68,9 +67,6 @@ onMounted(load);
       </div>
       <h1 class="font-serif italic text-3xl">{{ product.name }}</h1>
       <p class="font-logo text-2xl">{{ fmtPrice(product.priceEur) }}</p>
-      <div class="flex gap-2 flex-wrap">
-        <TierBadge v-for="tier in product.tiers" :key="tier" :tier="tier" />
-      </div>
       <p v-if="product.description" class="font-serif text-fm-black/80 whitespace-pre-line">{{ product.description }}</p>
       <div class="text-sm text-fm-black/60 space-y-1">
         <p v-if="product.saleEndAt">{{ t('shop.availableUntil', { date: fmtDate(product.saleEndAt) }) }}</p>

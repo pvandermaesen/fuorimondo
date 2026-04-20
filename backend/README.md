@@ -1,10 +1,10 @@
 # FuoriMondo — Backend
 
-Spring Boot 3.3 / Java 17 / Maven.
+Spring Boot 3.3 / Java 21 / Maven.
 
 ## Prérequis
 
-- JDK 17
+- JDK 21
 - Maven 3.9+
 
 ## Développement

@@ -38,9 +38,9 @@ async function submit() {
 <template>
   <div class="fm-page max-w-xs">
     <h2 class="text-xl mb-6 text-center">{{ t('login.title') }}</h2>
-    <form @submit.prevent="submit">
-      <FmInput v-model="form.email" :label="t('common.email')" type="email" required autocomplete="email" />
-      <FmInput v-model="form.password" :label="t('common.password')" type="password" required autocomplete="current-password" />
+    <form @submit.prevent="submit" method="post" action="/api/auth/login" name="login">
+      <FmInput v-model="form.email" :label="t('common.email')" type="email" required autocomplete="username" name="email" id="email" />
+      <FmInput v-model="form.password" :label="t('common.password')" type="password" required autocomplete="current-password" name="password" id="password" />
       <p v-if="error" class="text-sm text-fm-red mb-3">{{ error }}</p>
       <FmButton block type="submit" :disabled="busy" data-testid="login-submit">{{ t('login.submit') }}</FmButton>
     </form>
