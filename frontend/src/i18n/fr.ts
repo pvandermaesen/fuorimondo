@@ -151,6 +151,12 @@ export default {
     codeNone: 'Aucun code actif',
     regenerateCode: 'Régénérer un code',
     updateUser: 'Mettre à jour',
+    parrainSection: 'Parrainage',
+    isParrain: 'Cet utilisateur est un parrain',
+    parrainLabel: 'Parrain de cet utilisateur',
+    parrainSearchPlaceholder: 'Rechercher un parrain…',
+    parrainNone: 'Aucun parrain',
+    parrainClear: 'Délier',
     createdAt: 'Créé le',
     products: {
       title: 'Produits',

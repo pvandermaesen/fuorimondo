@@ -107,6 +107,12 @@ export default {
     codeValidUntil: 'Valido fino al',
     codeExpired: 'Scaduto', codeUsed: 'Utilizzato', codeNone: 'Nessun codice attivo',
     regenerateCode: 'Rigenera un codice', updateUser: 'Aggiorna',
+    parrainSection: 'Sponsorizzazione',
+    isParrain: 'Questo utente è uno sponsor',
+    parrainLabel: 'Sponsor di questo utente',
+    parrainSearchPlaceholder: 'Cerca uno sponsor…',
+    parrainNone: 'Nessuno sponsor',
+    parrainClear: 'Scollega',
     createdAt: 'Creato il',
     products: {
       title: 'Produits',

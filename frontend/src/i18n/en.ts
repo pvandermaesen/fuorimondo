@@ -107,6 +107,12 @@ export default {
     codeValidUntil: 'Valid until',
     codeExpired: 'Expired', codeUsed: 'Used', codeNone: 'No active code',
     regenerateCode: 'Regenerate code', updateUser: 'Update',
+    parrainSection: 'Sponsorship',
+    isParrain: 'This user is a sponsor',
+    parrainLabel: 'Sponsor of this user',
+    parrainSearchPlaceholder: 'Search for a sponsor…',
+    parrainNone: 'No sponsor',
+    parrainClear: 'Unlink',
     createdAt: 'Created at',
     products: {
       title: 'Produits',
