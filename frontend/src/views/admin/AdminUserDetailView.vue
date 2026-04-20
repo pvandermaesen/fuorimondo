@@ -8,6 +8,9 @@ import FmSelect from '../../components/FmSelect.vue';
 import FmInput from '../../components/FmInput.vue';
 import FmButton from '../../components/FmButton.vue';
 import TierBadge from '../../components/TierBadge.vue';
+import FmSwitch from '../../components/FmSwitch.vue';
+import ParrainAutocomplete from '../../components/ParrainAutocomplete.vue';
+import type { ParrainOption } from '../../api/types';
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -16,7 +19,8 @@ const user = ref<AdminUserResponse | null>(null);
 const busy = ref(false);
 const copied = ref(false);
 
-const form = ref<UpdateUserByAdminRequest>({ status: undefined, tierCode: undefined, adminNotes: '' });
+const form = ref<UpdateUserByAdminRequest>({ status: undefined, tierCode: undefined, adminNotes: '', isParrain: false });
+const parrainSelected = ref<ParrainOption | null>(null);
 
 const statusOpts = (['WAITING_LIST', 'ALLOCATAIRE_PENDING', 'ALLOCATAIRE', 'SUSPENDED'] as const).map(v => ({ value: v, label: t(`status.${v}`) }));
 const tierOpts = (['TIER_1', 'TIER_2', 'TIER_3'] as const).map(v => ({ value: v, label: t(`tiers.${v}`) }));
@@ -49,13 +53,30 @@ function formatDate(iso: string | null | undefined): string {
 async function load() {
   const u = await api.get<AdminUserResponse>(`/admin/users/${route.params.id}`);
   user.value = u;
-  form.value = { status: u.status, tierCode: u.tierCode ?? undefined, adminNotes: u.adminNotes ?? '' };
+  form.value = { status: u.status, tierCode: u.tierCode ?? undefined, adminNotes: u.adminNotes ?? '', isParrain: u.isParrain };
+  parrainSelected.value = u.parrainId
+    ? { id: u.parrainId, firstName: u.parrainFirstName ?? '', lastName: u.parrainLastName ?? '', email: '' }
+    : null;
 }
 
 async function save() {
   busy.value = true;
   try {
     user.value = await api.patch<AdminUserResponse>(`/admin/users/${route.params.id}`, form.value);
+  } finally { busy.value = false; }
+}
+
+async function saveParrain(next: ParrainOption | null) {
+  parrainSelected.value = next;
+  busy.value = true;
+  try {
+    user.value = await api.put<AdminUserResponse>(`/admin/users/${route.params.id}/parrain`, { parrainId: next ? next.id : null });
+  } catch (e: any) {
+    // revert local state on failure
+    parrainSelected.value = user.value?.parrainId
+      ? { id: user.value.parrainId, firstName: user.value.parrainFirstName ?? '', lastName: user.value.parrainLastName ?? '', email: '' }
+      : null;
+    alert(e?.payload?.message ?? 'Erreur');
   } finally { busy.value = false; }
 }
 
@@ -116,5 +137,19 @@ onMounted(load);
         <FmButton type="button" variant="secondary" :disabled="busy" @click="regenerate" data-testid="regenerate-code">{{ t('admin.regenerateCode') }}</FmButton>
       </div>
     </form>
+
+    <section class="fm-card mt-6 space-y-3" data-testid="parrain-section">
+      <h3 class="text-lg">{{ t('admin.parrainSection') }}</h3>
+      <FmSwitch v-model="form.isParrain as unknown as boolean"
+                :label="t('admin.isParrain')"
+                @update:modelValue="(v: boolean) => { form.isParrain = v; save(); }" />
+
+      <ParrainAutocomplete
+        v-if="!form.isParrain"
+        :modelValue="parrainSelected"
+        :label="t('admin.parrainLabel')"
+        :placeholder="t('admin.parrainSearchPlaceholder')"
+        @update:modelValue="saveParrain" />
+    </section>
   </div>
 </template>
