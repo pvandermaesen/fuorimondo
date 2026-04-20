@@ -59,6 +59,20 @@ class AdminUserControllerTest {
         userRepository.save(regular);
     }
 
+    private User seedParrain(String email, String firstName, String lastName) {
+        User p = new User();
+        p.setEmail(email);
+        p.setFirstName(firstName); p.setLastName(lastName);
+        p.setCivility(Civility.NONE);
+        p.setCountry("FR"); p.setCity("X");
+        p.setPasswordHash(passwordEncoder.encode("aVerySecurePass123!"));
+        p.setStatus(UserStatus.ALLOCATAIRE);
+        p.setRole(UserRole.USER);
+        p.setLocale(Locale.FR);
+        p.setIsParrain(true);
+        return userRepository.save(p);
+    }
+
     @Test
     void nonAdminGets403() throws Exception {
         mvc.perform(get("/api/admin/users").with(user(new CustomUserDetails(regular))))
@@ -78,5 +92,113 @@ class AdminUserControllerTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.user.status").value("ALLOCATAIRE_PENDING"))
             .andExpect(jsonPath("$.code").isNotEmpty());
+    }
+
+    @Test
+    void searchParrains_returnsOnlyParrains() throws Exception {
+        seedParrain("p1@fm.com", "Alice", "Martin");
+        seedParrain("p2@fm.com", "Bob", "Martin");
+        // regular (non-parrain, seeded in @BeforeEach) is named "R E" and must NOT show up even though it matches the query
+
+        mvc.perform(get("/api/admin/users/parrains?q=Martin")
+                .with(user(new CustomUserDetails(admin))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].email").value(org.hamcrest.Matchers.startsWith("p")));
+    }
+
+    @Test
+    void patch_togglesIsParrain() throws Exception {
+        String body = "{\"isParrain\": true}";
+        mvc.perform(patch("/api/admin/users/" + regular.getId())
+                .with(user(new CustomUserDetails(admin)))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.isParrain").value(true));
+    }
+
+    @Test
+    void putParrain_linksToParrain() throws Exception {
+        User parrain = seedParrain("p@fm.com", "Papa", "Rain");
+        String body = "{\"parrainId\": \"" + parrain.getId() + "\"}";
+        mvc.perform(put("/api/admin/users/" + regular.getId() + "/parrain")
+                .with(user(new CustomUserDetails(admin)))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.parrainId").value(parrain.getId().toString()))
+            .andExpect(jsonPath("$.parrainFirstName").value("Papa"))
+            .andExpect(jsonPath("$.parrainLastName").value("Rain"));
+    }
+
+    @Test
+    void putParrain_nullUnlinks() throws Exception {
+        User parrain = seedParrain("p@fm.com", "Papa", "Rain");
+        regular.setParrain(parrain);
+        userRepository.save(regular);
+
+        mvc.perform(put("/api/admin/users/" + regular.getId() + "/parrain")
+                .with(user(new CustomUserDetails(admin)))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"parrainId\": null}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.parrainId").doesNotExist());
+    }
+
+    @Test
+    void putParrain_selfLinkRejected() throws Exception {
+        regular.setIsParrain(true); // make self-target a parrain so we test self-link, not non-parrain
+        userRepository.save(regular);
+        String body = "{\"parrainId\": \"" + regular.getId() + "\"}";
+        mvc.perform(put("/api/admin/users/" + regular.getId() + "/parrain")
+                .with(user(new CustomUserDetails(admin)))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void putParrain_nonParrainTargetRejected() throws Exception {
+        User other = seedParrain("other@fm.com", "Non", "Parrain");
+        other.setIsParrain(false); // explicitly demote
+        userRepository.save(other);
+        String body = "{\"parrainId\": \"" + other.getId() + "\"}";
+        mvc.perform(put("/api/admin/users/" + regular.getId() + "/parrain")
+                .with(user(new CustomUserDetails(admin)))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    void demotingParrain_preservesFilleulsLink() throws Exception {
+        User parrain = seedParrain("p@fm.com", "Papa", "Rain");
+        regular.setParrain(parrain);
+        userRepository.save(regular);
+
+        // demote parrain
+        String body = "{\"isParrain\": false}";
+        mvc.perform(patch("/api/admin/users/" + parrain.getId())
+                .with(user(new CustomUserDetails(admin)))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andExpect(status().isOk());
+
+        // filleul still linked to the (now ex-) parrain
+        User filleul = userRepository.findById(regular.getId()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(parrain.getId(), filleul.getParrain().getId());
+
+        // and the ex-parrain does not show up in searches anymore
+        mvc.perform(get("/api/admin/users/parrains?q=Rain")
+                .with(user(new CustomUserDetails(admin))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
     }
 }
