@@ -94,12 +94,10 @@ At the end of the class (after the last getter/setter), add:
 
 ```java
     public boolean isParrain() { return isParrain; }
-    public void setParrain(boolean parrain) { this.isParrain = parrain; }
+    public void setIsParrain(boolean parrain) { this.isParrain = parrain; }
     public User getParrain() { return parrain; }
     public void setParrain(User parrain) { this.parrain = parrain; }
 ```
-
-Note: method name `setParrain(boolean)` collides in signature space only with `setParrain(User)` — Java resolves by parameter type. Keep both. The boolean setter intentionally uses the shorter name to match Lombok-style getters Hibernate expects (`isParrain` + `setParrain(boolean)`).
 
 - [ ] **Step 2: Add repository method for parrain search**
 
@@ -276,7 +274,7 @@ Replace the body of the `update` method (lines ~94-101) with:
         if (req.status() != null) u.setStatus(req.status());
         if (req.tierCode() != null) u.setTierCode(req.tierCode());
         if (req.adminNotes() != null) u.setAdminNotes(req.adminNotes());
-        if (req.isParrain() != null) u.setParrain(req.isParrain().booleanValue());
+        if (req.isParrain() != null) u.setIsParrain(req.isParrain().booleanValue());
         return u;
     }
 ```
@@ -288,7 +286,7 @@ Replace the body of the `update` method (lines ~94-101) with:
     public User setParrain(UUID userId, UUID parrainId) {
         User u = userRepository.findById(userId).orElseThrow();
         if (parrainId == null) {
-            u.setParrain((User) null);
+            u.setParrain(null);
             return u;
         }
         if (parrainId.equals(userId)) {
@@ -414,7 +412,7 @@ At the top of the test class, after the existing `@BeforeEach seed()` method, ad
         p.setStatus(UserStatus.ALLOCATAIRE);
         p.setRole(UserRole.USER);
         p.setLocale(Locale.FR);
-        p.setParrain(true);
+        p.setIsParrain(true);
         return userRepository.save(p);
     }
 ```
@@ -508,7 +506,7 @@ Expected: PASS.
 ```java
     @Test
     void putParrain_selfLinkRejected() throws Exception {
-        regular.setParrain(true); // make self-target a parrain so we test self-link, not non-parrain
+        regular.setIsParrain(true); // make self-target a parrain so we test self-link, not non-parrain
         userRepository.save(regular);
         String body = "{\"parrainId\": \"" + regular.getId() + "\"}";
         mvc.perform(put("/api/admin/users/" + regular.getId() + "/parrain")
@@ -529,7 +527,7 @@ Expected: PASS.
     @Test
     void putParrain_nonParrainTargetRejected() throws Exception {
         User other = seedParrain("other@fm.com", "Non", "Parrain");
-        other.setParrain(false); // explicitly demote
+        other.setIsParrain(false); // explicitly demote
         userRepository.save(other);
         String body = "{\"parrainId\": \"" + other.getId() + "\"}";
         mvc.perform(put("/api/admin/users/" + regular.getId() + "/parrain")
@@ -1019,7 +1017,7 @@ Feature is ready for user acceptance. No PR created automatically — await user
 - Manual smoke test → Task 10 step 4
 
 **Type consistency** — method names verified:
-- `User.setParrain(boolean)` and `User.setParrain(User)` (overloaded — OK in Java)
+- `User.setIsParrain(boolean)` and `User.setParrain(User)` (no overload — distinct names)
 - `User.isParrain()` / `User.getParrain()` — getter pair matches Hibernate's expectation for `boolean` vs reference types
 - `AdminUserService.setParrain(UUID, UUID)` — same name across service
 - `searchParrains(String q)` consistent in repo + service + controller

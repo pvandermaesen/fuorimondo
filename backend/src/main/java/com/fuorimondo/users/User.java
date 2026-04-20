@@ -96,7 +96,7 @@ public class User extends BaseEntity {
     public String getAdminNotes() { return adminNotes; }
     public void setAdminNotes(String adminNotes) { this.adminNotes = adminNotes; }
     public boolean isParrain() { return isParrain; }
-    public void setParrain(boolean parrain) { this.isParrain = parrain; }
+    public void setIsParrain(boolean parrain) { this.isParrain = parrain; }
     public User getParrain() { return parrain; }
     public void setParrain(User parrain) { this.parrain = parrain; }
 }
