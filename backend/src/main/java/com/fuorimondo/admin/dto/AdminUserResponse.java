@@ -12,7 +12,7 @@ public record AdminUserResponse(
     UserStatus status, UserRole role, TierCode tierCode, Locale locale,
     String referrerInfo, String adminNotes, Instant createdAt,
     String invitationCode, Instant invitationCodeExpiresAt, Instant invitationCodeUsedAt,
-    boolean isParrain, UUID parrainId, String parrainName
+    boolean isParrain, UUID parrainId, String parrainFirstName, String parrainLastName
 ) {
     public static AdminUserResponse from(User u) {
         return from(u, null);
@@ -29,6 +29,7 @@ public record AdminUserResponse(
             ic != null ? ic.getUsedAt() : null,
             u.isParrain(),
             p != null ? p.getId() : null,
-            p != null ? (p.getFirstName() + " " + p.getLastName()) : null);
+            p != null ? p.getFirstName() : null,
+            p != null ? p.getLastName() : null);
     }
 }

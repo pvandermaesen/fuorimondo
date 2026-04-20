@@ -61,7 +61,7 @@ public class User extends BaseEntity {
     @Column(name = "is_parrain", nullable = false)
     private boolean isParrain = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parrain_id")
     private User parrain;
 

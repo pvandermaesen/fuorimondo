@@ -85,7 +85,7 @@ In `User.java`, after the `adminNotes` field (around line 59), add:
     @Column(name = "is_parrain", nullable = false)
     private boolean isParrain = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parrain_id")
     private User parrain;
 ```
@@ -209,7 +209,7 @@ public record AdminUserResponse(
     UserStatus status, UserRole role, TierCode tierCode, Locale locale,
     String referrerInfo, String adminNotes, Instant createdAt,
     String invitationCode, Instant invitationCodeExpiresAt, Instant invitationCodeUsedAt,
-    boolean isParrain, UUID parrainId, String parrainName
+    boolean isParrain, UUID parrainId, String parrainFirstName, String parrainLastName
 ) {
     public static AdminUserResponse from(User u) {
         return from(u, null);
@@ -226,7 +226,8 @@ public record AdminUserResponse(
             ic != null ? ic.getUsedAt() : null,
             u.isParrain(),
             p != null ? p.getId() : null,
-            p != null ? (p.getFirstName() + " " + p.getLastName()) : null);
+            p != null ? p.getFirstName() : null,
+            p != null ? p.getLastName() : null);
     }
 }
 ```
@@ -472,7 +473,8 @@ Expected: PASS.
                 .content(body))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.parrainId").value(parrain.getId().toString()))
-            .andExpect(jsonPath("$.parrainName").value("Papa Rain"));
+            .andExpect(jsonPath("$.parrainFirstName").value("Papa"))
+            .andExpect(jsonPath("$.parrainLastName").value("Rain"));
     }
 ```
 
@@ -609,7 +611,8 @@ export interface AdminUserResponse extends UserResponse {
   invitationCodeUsedAt: string | null;
   isParrain: boolean;
   parrainId: string | null;
-  parrainName: string | null;
+  parrainFirstName: string | null;
+  parrainLastName: string | null;
 }
 ```
 
@@ -899,7 +902,7 @@ async function load() {
   user.value = u;
   form.value = { status: u.status, tierCode: u.tierCode ?? undefined, adminNotes: u.adminNotes ?? '', isParrain: u.isParrain };
   parrainSelected.value = u.parrainId
-    ? { id: u.parrainId, firstName: u.parrainName?.split(' ')[0] ?? '', lastName: u.parrainName?.split(' ').slice(1).join(' ') ?? '', email: '' }
+    ? { id: u.parrainId, firstName: u.parrainFirstName ?? '', lastName: u.parrainLastName ?? '', email: '' }
     : null;
 }
 ```
@@ -915,7 +918,7 @@ async function saveParrain(next: ParrainOption | null) {
   } catch (e: any) {
     // revert local state on failure
     parrainSelected.value = user.value?.parrainId
-      ? { id: user.value.parrainId, firstName: user.value.parrainName?.split(' ')[0] ?? '', lastName: user.value.parrainName?.split(' ').slice(1).join(' ') ?? '', email: '' }
+      ? { id: user.value.parrainId, firstName: user.value.parrainFirstName ?? '', lastName: user.value.parrainLastName ?? '', email: '' }
       : null;
     alert(e?.payload?.message ?? 'Erreur');
   } finally { busy.value = false; }
@@ -1021,4 +1024,4 @@ Feature is ready for user acceptance. No PR created automatically — await user
 - `User.isParrain()` / `User.getParrain()` — getter pair matches Hibernate's expectation for `boolean` vs reference types
 - `AdminUserService.setParrain(UUID, UUID)` — same name across service
 - `searchParrains(String q)` consistent in repo + service + controller
-- DTO field names `isParrain`, `parrainId`, `parrainName` consistent backend/frontend
+- DTO field names `isParrain`, `parrainId`, `parrainFirstName`, `parrainLastName` consistent backend/frontend
