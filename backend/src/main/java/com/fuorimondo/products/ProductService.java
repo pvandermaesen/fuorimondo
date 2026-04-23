@@ -13,9 +13,11 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository repository;
+    private final PhotoStorage storage;
 
-    public ProductService(ProductRepository repository) {
+    public ProductService(ProductRepository repository, PhotoStorage storage) {
         this.repository = repository;
+        this.storage = storage;
     }
 
     @Transactional(readOnly = true)
@@ -46,8 +48,44 @@ public class ProductService {
 
     @Transactional
     public void delete(UUID id) {
-        // photo file cleanup will be wired in Task 8/9 when PhotoStorage is introduced
-        repository.deleteById(id);
+        Product p = getById(id);
+        if (p.getPhotoFilename() != null) {
+            storage.delete(p.getPhotoFilename());
+        }
+        repository.delete(p);
+    }
+
+    @Transactional
+    public Product setPhoto(UUID id, org.springframework.web.multipart.MultipartFile file) throws java.io.IOException {
+        Product p = getById(id);
+        String oldName = p.getPhotoFilename();
+        String newName = storage.store(file);
+        p.setPhotoFilename(newName);
+        Product saved = repository.save(p);
+        if (oldName != null) storage.delete(oldName);
+        return saved;
+    }
+
+    @Transactional
+    public Product clearPhoto(UUID id) {
+        Product p = getById(id);
+        if (p.getPhotoFilename() != null) {
+            storage.delete(p.getPhotoFilename());
+            p.setPhotoFilename(null);
+            return repository.save(p);
+        }
+        return p;
+    }
+
+    public org.springframework.core.io.Resource loadPhoto(UUID id) {
+        Product p = getById(id);
+        if (p.getPhotoFilename() == null) throw new jakarta.persistence.EntityNotFoundException("No photo");
+        return storage.load(p.getPhotoFilename());
+    }
+
+    public String photoContentType(UUID id) {
+        Product p = getById(id);
+        return storage.contentTypeFor(p.getPhotoFilename());
     }
 
     private void apply(Product p, ProductRequest req) {

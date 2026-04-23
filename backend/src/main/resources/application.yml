@@ -34,6 +34,8 @@ fuorimondo:
     login-attempts-per-15min: 5
     activation-attempts-per-15min: 5
     reset-attempts-per-15min: 5
+  uploads:
+    dir: ${FUORIMONDO_UPLOADS_DIR:./uploads}
 
 management:
   endpoints:
