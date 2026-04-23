@@ -34,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
            """)
     long countActiveReservations(@Param("product") Product product, @Param("now") Instant now);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
            UPDATE Order o SET o.status = com.fuorimondo.orders.OrderStatus.EXPIRED
            WHERE o.status = com.fuorimondo.orders.OrderStatus.PENDING_PAYMENT
