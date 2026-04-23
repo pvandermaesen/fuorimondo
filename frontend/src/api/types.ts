@@ -25,6 +25,9 @@ export interface AdminUserResponse extends UserResponse {
   referrerInfo: string | null;
   adminNotes: string | null;
   createdAt: string;
+  invitationCode: string | null;
+  invitationCodeExpiresAt: string | null;
+  invitationCodeUsedAt: string | null;
 }
 
 export interface AddressResponse {
@@ -126,10 +129,12 @@ export interface UpdateUserByAdminRequest {
 
 export interface Page<T> {
   content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
+  page: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 export interface LegalResponse {
@@ -142,4 +147,32 @@ export interface ApiError {
   code: string;
   message: string;
   details: string[];
+}
+
+export interface ProductRequest {
+  name: string;
+  description: string | null;
+  priceEur: string;
+  delivery: boolean;
+  weightKg: string | null;
+  tiers: TierCode[];
+  saleStartAt: string;
+  saleEndAt: string | null;
+  stock: number | null;
+}
+
+export interface ProductResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  priceEur: string;
+  photoFilename: string | null;
+  delivery: boolean;
+  weightKg: string | null;
+  tiers: TierCode[];
+  saleStartAt: string;
+  saleEndAt: string | null;
+  stock: number | null;
+  createdAt: string;
+  updatedAt: string;
 }

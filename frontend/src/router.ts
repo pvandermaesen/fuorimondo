@@ -14,6 +14,9 @@ const routes: RouteRecordRaw[] = [
   { path: '/admin/users', name: 'admin-users', component: () => import('./views/admin/AdminUsersView.vue'), meta: { admin: true } },
   { path: '/admin/users/create', name: 'admin-users-create', component: () => import('./views/admin/AdminCreateUserView.vue'), meta: { admin: true } },
   { path: '/admin/users/:id', name: 'admin-user-detail', component: () => import('./views/admin/AdminUserDetailView.vue'), meta: { admin: true } },
+  { path: '/admin/products', name: 'admin-products', component: () => import('./views/admin/AdminProductsView.vue'), meta: { admin: true } },
+  { path: '/admin/products/create', name: 'admin-products-create', component: () => import('./views/admin/AdminCreateProductView.vue'), meta: { admin: true } },
+  { path: '/admin/products/:id', name: 'admin-product-detail', component: () => import('./views/admin/AdminProductDetailView.vue'), meta: { admin: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ];
 

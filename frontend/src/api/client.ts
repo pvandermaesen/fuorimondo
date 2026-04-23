@@ -1,4 +1,5 @@
 import type { ApiError } from './types';
+import { inFlight } from './loading';
 
 const BASE = '/api';
 
@@ -30,30 +31,35 @@ async function request<T>(
   opts: { raw?: boolean } = {}
 ): Promise<T> {
   const isMutation = method !== 'GET' && method !== 'HEAD';
-  if (isMutation) await primeCsrfCookie();
+  inFlight.value++;
+  try {
+    if (isMutation) await primeCsrfCookie();
 
-  const headers: Record<string, string> = {};
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
-  if (isMutation) {
-    const csrf = readCookie('XSRF-TOKEN');
-    if (csrf) headers['X-XSRF-TOKEN'] = csrf;
+    const headers: Record<string, string> = {};
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    if (isMutation) {
+      const csrf = readCookie('XSRF-TOKEN');
+      if (csrf) headers['X-XSRF-TOKEN'] = csrf;
+    }
+
+    const res = await fetch(BASE + path, {
+      method,
+      credentials: 'include',
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+
+    if (res.status === 204) return undefined as T;
+    if (!res.ok) {
+      let payload: ApiError | null = null;
+      try { payload = await res.json(); } catch { /* noop */ }
+      throw new ApiException(res.status, payload, payload?.message || res.statusText);
+    }
+    if (opts.raw) return (await res.text()) as unknown as T;
+    return (await res.json()) as T;
+  } finally {
+    inFlight.value--;
   }
-
-  const res = await fetch(BASE + path, {
-    method,
-    credentials: 'include',
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
-
-  if (res.status === 204) return undefined as T;
-  if (!res.ok) {
-    let payload: ApiError | null = null;
-    try { payload = await res.json(); } catch { /* noop */ }
-    throw new ApiException(res.status, payload, payload?.message || res.statusText);
-  }
-  if (opts.raw) return (await res.text()) as unknown as T;
-  return (await res.json()) as T;
 }
 
 export const api = {
@@ -63,3 +69,31 @@ export const api = {
   put:    <T>(p: string, body?: unknown) => request<T>('PUT', p, body),
   delete: <T>(p: string) => request<T>('DELETE', p),
 };
+
+export async function uploadMultipart<T>(path: string, file: File, field = 'file'): Promise<T> {
+  await primeCsrfCookie();
+  const form = new FormData();
+  form.append(field, file);
+  const headers: Record<string, string> = {};
+  const csrf = readCookie('XSRF-TOKEN');
+  if (csrf) headers['X-XSRF-TOKEN'] = csrf;
+
+  inFlight.value++;
+  try {
+    const res = await fetch(BASE + path, {
+      method: 'POST',
+      credentials: 'include',
+      headers,
+      body: form,
+    });
+    if (!res.ok) {
+      let payload: ApiError | null = null;
+      try { payload = await res.json(); } catch { /* noop */ }
+      throw new ApiException(res.status, payload, payload?.message || res.statusText);
+    }
+    if (res.status === 204) return undefined as T;
+    return (await res.json()) as T;
+  } finally {
+    inFlight.value--;
+  }
+}
