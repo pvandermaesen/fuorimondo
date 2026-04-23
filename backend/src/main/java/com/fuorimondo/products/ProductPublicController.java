@@ -45,4 +45,28 @@ public class ProductPublicController {
             .filter(r -> r.stockRemaining() == null || r.stockRemaining() > 0)
             .toList();
     }
+
+    @GetMapping("/{id}")
+    public PublicProductResponse detail(@AuthenticationPrincipal CustomUserDetails principal,
+                                         @PathVariable UUID id) {
+        User u = userRepository.findById(principal.getUserId()).orElseThrow();
+        Product p = productRepository.findById(id).orElseThrow(() ->
+            new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.NOT_FOUND));
+
+        Instant now = Instant.now();
+        if (u.getTierCode() == null || !p.getTiers().contains(u.getTierCode())
+            || p.getSaleStartAt().isAfter(now)
+            || (p.getSaleEndAt() != null && !p.getSaleEndAt().isAfter(now))) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+
+        Integer remaining = null;
+        if (p.getStock() != null) {
+            long reserved = orderRepository.countActiveReservations(p, now);
+            remaining = Math.max(0, p.getStock() - (int) reserved);
+        }
+        return PublicProductResponse.from(p, remaining);
+    }
 }

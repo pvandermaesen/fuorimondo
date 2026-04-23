@@ -91,4 +91,37 @@ class ProductPublicControllerTest {
            .andExpect(jsonPath("$.length()").value(1))
            .andExpect(jsonPath("$[0].id").value(visible.getId().toString()));
     }
+
+    @Test
+    void detail_returns_404_for_wrong_tier() throws Exception {
+        Instant now = Instant.now();
+        Product t2 = seedProduct("T2 only", new BigDecimal("50.00"),
+            EnumSet.of(TierCode.TIER_2), now.minus(1, ChronoUnit.DAYS), null, null);
+
+        mvc.perform(get("/api/products/" + t2.getId()).with(user(new CustomUserDetails(tier1User))))
+           .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void detail_returns_product_when_visible() throws Exception {
+        Instant now = Instant.now();
+        Product p = seedProduct("T1 open", new BigDecimal("120.00"),
+            EnumSet.of(TierCode.TIER_1), now.minus(1, ChronoUnit.DAYS), null, null);
+
+        mvc.perform(get("/api/products/" + p.getId()).with(user(new CustomUserDetails(tier1User))))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(p.getId().toString()))
+           .andExpect(jsonPath("$.priceEur").value(120.00));
+    }
+
+    @Test
+    void list_hides_out_of_stock_products() throws Exception {
+        Instant now = Instant.now();
+        seedProduct("T1 stock0", new BigDecimal("100.00"),
+            EnumSet.of(TierCode.TIER_1), now.minus(1, ChronoUnit.DAYS), null, 0);
+
+        mvc.perform(get("/api/products").with(user(new CustomUserDetails(tier1User))))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.length()").value(0));
+    }
 }
