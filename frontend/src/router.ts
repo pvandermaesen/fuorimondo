@@ -17,6 +17,14 @@ const routes: RouteRecordRaw[] = [
   { path: '/admin/products', name: 'admin-products', component: () => import('./views/admin/AdminProductsView.vue'), meta: { admin: true } },
   { path: '/admin/products/create', name: 'admin-products-create', component: () => import('./views/admin/AdminCreateProductView.vue'), meta: { admin: true } },
   { path: '/admin/products/:id', name: 'admin-product-detail', component: () => import('./views/admin/AdminProductDetailView.vue'), meta: { admin: true } },
+  { path: '/shop', name: 'shop', component: () => import('./views/ShopView.vue') },
+  { path: '/shop/:id', name: 'shop-product', component: () => import('./views/ShopProductView.vue') },
+  { path: '/shop/checkout/:productId', name: 'shop-checkout', component: () => import('./views/ShopCheckoutView.vue') },
+  { path: '/shop/order/:id/return', name: 'shop-return', component: () => import('./views/ShopReturnView.vue') },
+  { path: '/orders', name: 'my-orders', component: () => import('./views/MyOrdersView.vue') },
+  { path: '/orders/:id', name: 'order-detail', component: () => import('./views/OrderDetailView.vue') },
+  { path: '/admin/orders', name: 'admin-orders', component: () => import('./views/admin/AdminOrdersView.vue'), meta: { admin: true } },
+  { path: '/admin/orders/:id', name: 'admin-order-detail', component: () => import('./views/admin/AdminOrderDetailView.vue'), meta: { admin: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ];
 

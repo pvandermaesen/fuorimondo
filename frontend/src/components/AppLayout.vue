@@ -79,6 +79,8 @@ function changeLocale(l: 'fr' | 'it' | 'en') {
       <nav class="flex-1 overflow-y-auto px-5 py-4 space-y-1">
         <template v-if="auth.isAuthenticated">
           <router-link to="/" class="block py-2 text-base">{{ t('nav.home') }}</router-link>
+          <router-link v-if="auth.isAllocataire" to="/shop" class="block py-2 text-base">{{ t('nav.shop') }}</router-link>
+          <router-link to="/orders" class="block py-2 text-base">{{ t('nav.myOrders') }}</router-link>
           <router-link to="/profile" class="block py-2 text-base">{{ t('nav.profile') }}</router-link>
           <router-link v-if="auth.isAllocataire" to="/addresses" class="block py-2 text-base">{{ t('nav.addresses') }}</router-link>
           <router-link to="/settings" class="block py-2 text-base">{{ t('nav.settings') }}</router-link>
@@ -86,6 +88,7 @@ function changeLocale(l: 'fr' | 'it' | 'en') {
             <div class="text-xs uppercase tracking-widest text-fm-black/50 py-2">{{ t('nav.admin') }}</div>
             <router-link to="/admin/users" class="block py-2 text-base">{{ t('nav.adminUsers') }}</router-link>
             <router-link to="/admin/products" class="block py-2 text-base">{{ t('nav.adminProducts') }}</router-link>
+            <router-link to="/admin/orders" class="block py-2 text-base">{{ t('nav.adminOrders') }}</router-link>
           </div>
         </template>
         <template v-else>
