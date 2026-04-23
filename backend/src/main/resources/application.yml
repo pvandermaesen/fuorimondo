@@ -36,6 +36,9 @@ fuorimondo:
     reset-attempts-per-15min: 5
   uploads:
     dir: ${FUORIMONDO_UPLOADS_DIR:./uploads}
+  order:
+    reservation-ttl-minutes: 15
+    expiration-job-interval-minutes: 5
 
 management:
   endpoints:
@@ -49,3 +52,10 @@ springdoc:
     operationsSorter: method
   api-docs:
     path: /v3/api-docs
+
+mollie:
+  api-key: ${MOLLIE_API_KEY:}
+  enabled: ${MOLLIE_ENABLED:true}
+  api-base-url: https://api.mollie.com/v2
+  redirect-base-url: ${APP_BASE_URL:http://localhost:5273}
+  webhook-base-url: ${WEBHOOK_BASE_URL:}

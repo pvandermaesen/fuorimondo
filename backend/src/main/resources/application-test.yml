@@ -19,3 +19,7 @@ spring:
 logging:
   level:
     com.fuorimondo: DEBUG
+
+mollie:
+  enabled: false
+  redirect-base-url: http://localhost:5273

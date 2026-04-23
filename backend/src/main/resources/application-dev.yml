@@ -26,3 +26,6 @@ logging:
   level:
     com.fuorimondo: DEBUG
     org.springframework.security: INFO
+
+mollie:
+  enabled: false
