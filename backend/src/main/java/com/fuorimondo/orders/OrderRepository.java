@@ -44,5 +44,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Product p WHERE p.id = :productId")
-    Optional<com.fuorimondo.products.Product> lockProduct(@Param("productId") UUID productId);
+    Optional<Product> lockProduct(@Param("productId") UUID productId);
 }
