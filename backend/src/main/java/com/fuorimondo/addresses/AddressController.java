@@ -20,9 +20,10 @@ public class AddressController {
     public AddressController(AddressService service) { this.service = service; }
 
     @GetMapping
-    public List<AddressResponse> list(@AuthenticationPrincipal CustomUserDetails principal) {
-        return service.listForUser(principal.getUserId()).stream()
-            .map(AddressResponse::from).toList();
+    public List<AddressResponse> list(@AuthenticationPrincipal CustomUserDetails principal,
+                                       @RequestParam(required = false) AddressType type) {
+        return service.listByUserAndType(principal.getUserId(), type)
+            .stream().map(AddressResponse::from).toList();
     }
 
     @PostMapping

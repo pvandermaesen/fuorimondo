@@ -10,4 +10,8 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
     List<Address> findByUserIdAndType(UUID userId, AddressType type);
 
     List<Address> findByUserId(UUID userId);
+
+    List<Address> findByUserIdOrderByIsDefaultDescCreatedAtDesc(UUID userId);
+
+    List<Address> findByUserIdAndTypeOrderByIsDefaultDescCreatedAtDesc(UUID userId, AddressType type);
 }

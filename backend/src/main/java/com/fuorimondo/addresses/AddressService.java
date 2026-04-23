@@ -25,6 +25,12 @@ public class AddressService {
         return addressRepository.findByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Address> listByUserAndType(UUID userId, AddressType type) {
+        if (type == null) return addressRepository.findByUserIdOrderByIsDefaultDescCreatedAtDesc(userId);
+        return addressRepository.findByUserIdAndTypeOrderByIsDefaultDescCreatedAtDesc(userId, type);
+    }
+
     @Transactional
     public Address create(UUID userId, AddressRequest req) {
         Address a = new Address();
