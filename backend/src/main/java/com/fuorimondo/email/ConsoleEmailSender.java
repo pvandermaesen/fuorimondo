@@ -24,4 +24,11 @@ public class ConsoleEmailSender implements EmailSender {
     public void sendPasswordResetLink(String to, String resetUrl, Locale locale) {
         log.info("\n==== EMAIL ====\nTO: {}\nSUBJECT: Fuori Marmo — Réinitialisation du mot de passe\nLOCALE: {}\nBODY:\nLien : {}\n====", to, locale, resetUrl);
     }
+
+    @Override
+    public void sendOrderConfirmation(String to, String firstName, Locale locale,
+                                       String orderId, java.math.BigDecimal totalEur) {
+        log.info("\n==== EMAIL ====\nTO: {}\nSUBJECT: Fuori Marmo — Confirmation de votre commande\nLOCALE: {}\nBODY:\nBonjour {},\nVotre commande {} ({} EUR) est confirmée.\n====",
+            to, locale, firstName, orderId, totalEur);
+    }
 }
