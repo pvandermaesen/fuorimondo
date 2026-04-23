@@ -176,3 +176,70 @@ export interface ProductResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export type OrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'FAILED' | 'CANCELLED' | 'EXPIRED';
+
+export interface PublicProductResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  priceEur: string;
+  photoFilename: string | null;
+  weightKg: string | null;
+  delivery: boolean;
+  tiers: TierCode[];
+  saleStartAt: string;
+  saleEndAt: string | null;
+  stockRemaining: number | null;
+}
+
+export interface ProductSnapshot {
+  id: string;
+  name: string;
+  description: string | null;
+  priceEur: string;
+  photoFilename: string | null;
+  weightKg: string | null;
+  delivery: boolean;
+  tiers: TierCode[];
+}
+
+export interface ShippingSnapshot {
+  fullName: string;
+  street: string;
+  streetExtra: string | null;
+  postalCode: string;
+  city: string;
+  country: string;
+}
+
+export interface CreateOrderRequest { productId: string; shippingAddressId?: string | null; }
+export interface CreateOrderResponse { orderId: string; checkoutUrl: string; }
+
+export interface OrderResponse {
+  id: string;
+  product: ProductSnapshot;
+  unitPriceEur: string;
+  totalEur: string;
+  shippingAddress: ShippingSnapshot | null;
+  status: OrderStatus;
+  mollieCheckoutUrl: string | null;
+  expiresAt: string | null;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+export interface AdminOrderResponse {
+  id: string;
+  userId: string;
+  userEmail: string;
+  userFirstName: string;
+  userLastName: string;
+  product: ProductSnapshot;
+  totalEur: string;
+  shipping: ShippingSnapshot | null;
+  status: OrderStatus;
+  molliePaymentId: string | null;
+  createdAt: string;
+  paidAt: string | null;
+}
