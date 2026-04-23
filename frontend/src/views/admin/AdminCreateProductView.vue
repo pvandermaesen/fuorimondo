@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { api, ApiException } from '../../api/client';
+import { postMultipart, ApiException } from '../../api/client';
 import type { ProductRequest, ProductResponse, TierCode } from '../../api/types';
 import FmInput from '../../components/FmInput.vue';
 import FmButton from '../../components/FmButton.vue';
@@ -26,10 +26,16 @@ const form = reactive<{
 
 const error = ref<string | null>(null);
 const busy = ref(false);
+const photoFile = ref<File | null>(null);
 
 function toggleTier(tc: TierCode) {
   if (form.tiers.has(tc)) form.tiers.delete(tc);
   else form.tiers.add(tc);
+}
+
+function onPhotoChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files;
+  photoFile.value = files && files.length > 0 ? files[0] : null;
 }
 
 async function submit() {
@@ -49,7 +55,10 @@ async function submit() {
       saleEndAt: form.saleEndAt ? new Date(form.saleEndAt).toISOString() : null,
       stock: form.stock === '' ? null : Number(form.stock),
     };
-    const created = await api.post<ProductResponse>('/admin/products', body);
+    const fd = new FormData();
+    fd.append('product', new Blob([JSON.stringify(body)], { type: 'application/json' }));
+    if (photoFile.value) fd.append('photo', photoFile.value);
+    const created = await postMultipart<ProductResponse>('/admin/products', fd);
     router.push({ name: 'admin-product-detail', params: { id: created.id } });
   } catch (e) {
     error.value = e instanceof ApiException ? (e.payload?.message || t('common.error')) : t('common.error');
@@ -90,6 +99,11 @@ async function submit() {
       <FmInput v-model="form.saleStartAt" :label="t('admin.products.saleStart')" type="datetime-local" required />
       <FmInput v-model="form.saleEndAt" :label="t('admin.products.saleEnd')" type="datetime-local" />
       <FmInput v-model="form.stock" :label="t('admin.products.stock')" type="number" />
+
+      <label class="block text-sm">
+        {{ t('admin.products.photo') }}
+        <input type="file" accept="image/jpeg,image/png,image/webp" @change="onPhotoChange" class="mt-1 block" />
+      </label>
 
       <p v-if="error" class="text-sm text-fm-red">{{ error }}</p>
       <FmButton type="submit" variant="primary" block :disabled="busy">

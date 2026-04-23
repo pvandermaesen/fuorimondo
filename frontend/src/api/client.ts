@@ -70,10 +70,8 @@ export const api = {
   delete: <T>(p: string) => request<T>('DELETE', p),
 };
 
-export async function uploadMultipart<T>(path: string, file: File, field = 'file'): Promise<T> {
+export async function postMultipart<T>(path: string, form: FormData): Promise<T> {
   await primeCsrfCookie();
-  const form = new FormData();
-  form.append(field, file);
   const headers: Record<string, string> = {};
   const csrf = readCookie('XSRF-TOKEN');
   if (csrf) headers['X-XSRF-TOKEN'] = csrf;
@@ -96,4 +94,10 @@ export async function uploadMultipart<T>(path: string, file: File, field = 'file
   } finally {
     inFlight.value--;
   }
+}
+
+export async function uploadMultipart<T>(path: string, file: File, field = 'file'): Promise<T> {
+  const form = new FormData();
+  form.append(field, file);
+  return postMultipart<T>(path, form);
 }

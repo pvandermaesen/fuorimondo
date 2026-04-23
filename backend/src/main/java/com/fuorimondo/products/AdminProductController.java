@@ -1,9 +1,11 @@
 package com.fuorimondo.products;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuorimondo.products.dto.ProductRequest;
 import com.fuorimondo.products.dto.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -21,9 +24,13 @@ import java.util.UUID;
 public class AdminProductController {
 
     private final ProductService service;
+    private final ObjectMapper objectMapper;
+    private final Validator validator;
 
-    public AdminProductController(ProductService service) {
+    public AdminProductController(ProductService service, ObjectMapper objectMapper, Validator validator) {
         this.service = service;
+        this.objectMapper = objectMapper;
+        this.validator = validator;
     }
 
     @GetMapping
@@ -36,9 +43,25 @@ public class AdminProductController {
         return ProductResponse.from(service.getById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest req) {
         Product created = service.create(req);
+        return ResponseEntity.status(201).body(ProductResponse.from(created));
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductResponse> createMultipart(
+            @RequestPart("product") String productJson,
+            @RequestPart(value = "photo", required = false) MultipartFile photo) throws IOException {
+        ProductRequest req = objectMapper.readValue(productJson, ProductRequest.class);
+        Set<jakarta.validation.ConstraintViolation<ProductRequest>> violations = validator.validate(req);
+        if (!violations.isEmpty()) {
+            throw new jakarta.validation.ConstraintViolationException(violations);
+        }
+        Product created = service.create(req);
+        if (photo != null && !photo.isEmpty()) {
+            created = service.setPhoto(created.getId(), photo);
+        }
         return ResponseEntity.status(201).body(ProductResponse.from(created));
     }
 
